@@ -5,6 +5,8 @@
  * SSceneMapLayer
  */
 const engine = require("../../core/SClass");
+require("../../core/SObject");
+
 engine.SceneMapLayer = engine.Object.extend({
     _container: null,
     _surface:null,
@@ -16,6 +18,7 @@ engine.SceneMapLayer = engine.Object.extend({
         engine.Object.prototype.ctor.call(self);
 
         this._surface = new engine.BlockCombinationSurface(this._container);
+        this._surface.focus(0,0);
 
         cc.director.getScheduler().scheduleUpdate(this, 0, false);
     },

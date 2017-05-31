@@ -5,6 +5,9 @@
  * BlockCombinationSurface
  */
 const engine = require("../../core/SClass");
+require("../../core/SObject");
+require("../../core/SDictionary");
+
 engine.BlockCombinationSurface = engine.Object.extend({
     _container: null,
     _mapWidth: 9984,//0,
@@ -58,7 +61,7 @@ engine.BlockCombinationSurface = engine.Object.extend({
 
     ctor: function (container) {
         this._container = container;
-        this._bufferContainer=new cc.Node();
+        this._bufferContainer = new cc.Node();
         this._container.addChild(this._bufferContainer);
         this._bufferContainer.setAnchorPoint(0, 0);
         this._bufferContainer.setPosition(0, 0);
@@ -67,10 +70,10 @@ engine.BlockCombinationSurface = engine.Object.extend({
         this._screenRect = new cc.rect(0, 0, 0, 0);
         this._viewRect = new cc.rect(0, 0, 0, 0);
         this._bufferRect = new cc.rect(0, 0, 0, 0);
-        this._offsetPoint = new cc.Point(0,0);
+        this._offsetPoint = new cc.p(0, 0);
 
         var size = cc.director.getWinSize();
-        this.setViewSize(size.width,size.height);
+        this.setViewSize(size.width, size.height);
     },
 
     fillInternal: function () {
@@ -206,7 +209,7 @@ engine.BlockCombinationSurface = engine.Object.extend({
                 endColmns = this._bufferCols + this._pretreatmentNum + this._startTileX;
                 if (endColmns > this._mapCols)
                     endColmns = this._mapCols;
-                
+
                 for (rowCount = startRow; rowCount <= endRow; rowCount++) //顺时针则从上到下
                 {
                     for (colmnsCount = startColmns; colmnsCount <= endColmns; colmnsCount++) //从左到右
@@ -290,12 +293,13 @@ engine.BlockCombinationSurface = engine.Object.extend({
         //console.log("绘制：", colmnsIndex, rowIndex,this._bufferRect.x,this._bufferRect.y);
         var ix = colmnsIndex;
         var iy = rowIndex;
-        var dirPath = "G:/Workspace/H5MapEditor_BySunny/maps/test";
+        //var dirPath = "G:/Workspace/H5MapEditor_BySunny/maps/test";
+        var dirPath = "maps/test";
 
-        this.loadSlice(dirPath + "/slices/" + ix + "_" + iy + ".jpg", ix * this._tileWidth, iy * this._tileHeight);
+        this.loadSlice(dirPath + "/slices/" + ix + "_" + iy/* + ".jpg"*/, ix * this._tileWidth, iy * this._tileHeight);
     },
 
-    tilessssss : new engine.Dictionary(),
+    tilessssss: new engine.Dictionary(),
 
     loadSlice: function (slicePath, x, y) {
         var itemX = x;
@@ -305,31 +309,44 @@ engine.BlockCombinationSurface = engine.Object.extend({
         var that = this;
 
         var sliceItem = this.tilessssss.objectForKey(slicePath);
-        if(sliceItem)
-        {
-                sliceItem.setPosition(itemX, itemY);
-                that._bufferContainer.addChild(sliceItem);
+        if (sliceItem) {
+            sliceItem.setPosition(itemX, itemY);
+            that._bufferContainer.addChild(sliceItem);
         }
-        else
-        {
-
-            cc.loader.loadImg(slicePath, { isCrossOrigin: false }, function (err, img) {
+        else {
+            engine.ResourceManager.getInstance().loadRes(slicePath, (err, texture) => {
                 if (err) {
-                    cc.log(err, slicePath);
+                    cc.error(err);
                 }
                 else {
-                    //   cc.log(slicePath, "ok");
-                    var texture2d = new cc.Texture2D();
-                    texture2d.initWithElement(img);
-                    texture2d.handleLoadedTexture();
-                    var sliceItem = new cc.Sprite(texture2d);
+                    sliceItem = new cc.Node();
                     sliceItem.setAnchorPoint(0, 0);
                     sliceItem.setPosition(itemX, itemY);
+                    var sprite = sliceItem.addComponent(cc.Sprite);
                     that._bufferContainer.addChild(sliceItem);
-
+                    sprite.spriteFrame = new cc.SpriteFrame(texture);
                     that.tilessssss.setObject(slicePath,sliceItem);
                 }
             });
+
+
+            /*  cc.loader.loadRes(slicePath, function (err, img) {
+                  if (err) {
+                      cc.log(err, slicePath);
+                  }
+                  else {
+                      //   cc.log(slicePath, "ok");
+                      var texture2d = new cc.Texture2D();
+                      texture2d.initWithElement(img);
+                      texture2d.handleLoadedTexture();
+                      sliceItem = new cc.Sprite(texture2d);
+                      sliceItem.setAnchorPoint(0, 0);
+                      sliceItem.setPosition(itemX, itemY);
+                      that._bufferContainer.addChild(sliceItem);
+  
+                      that.tilessssss.setObject(slicePath,sliceItem);
+                  }
+              });*/
         }
     },
 
@@ -385,7 +402,7 @@ engine.BlockCombinationSurface = engine.Object.extend({
             var buffPosX = -this._viewX;
             var buffPosY = -(this._mapHeight - this._viewHeight + this._viewY);
             //console.log("刷新坐标",buffPosX,buffPosY);
-            this._bufferContainer.setPosition(buffPosX,buffPosY);
+            this._bufferContainer.setPosition(buffPosX, buffPosY);
 
             // 加载地图区块到缓冲区中
             if (isRefreshBuffer) {
@@ -405,16 +422,16 @@ engine.BlockCombinationSurface = engine.Object.extend({
         this._bufferRect.y = this._startTileY * this._tileHeight;
         //console.log("buffRect:",this._bufferRect.x,this._bufferRect.y);
 
-       // this._bufferBitmapData.lock();
+        // this._bufferBitmapData.lock();
         //如果是滚动刷新缓冲区
         if (this._lastStartTileX == -1 && this._lastStartTileY == -1) //填充全部
         {
-           // this._bufferBitmapData.fillRect(this._bufferBitmapData.rect, 0);
+            // this._bufferBitmapData.fillRect(this._bufferBitmapData.rect, 0);
         }
         else {
             var tileXDelta = this._startTileX - this._lastStartTileX;
             var tileYDelta = this._startTileY - this._lastStartTileY;
-          //  this._bufferBitmapData.scroll(-tileXDelta * this._tileWidth, -tileYDelta * this._tileHeight);
+            //  this._bufferBitmapData.scroll(-tileXDelta * this._tileWidth, -tileYDelta * this._tileHeight);
         }
 
         //var time = getTimer();
@@ -424,7 +441,7 @@ engine.BlockCombinationSurface = engine.Object.extend({
         //      time = getTimer() - time;
         //      if (time >= 5)
         //        SDebug.warningPrint(this, String(this) + "refreshBuffer消耗严重！当前为：" + time);
-       // this._bufferBitmapData.unlock();
+        // this._bufferBitmapData.unlock();
     },
 
     clearPeripheral: function () {
@@ -603,7 +620,7 @@ engine.BlockCombinationSurface = engine.Object.extend({
         // }
     },
 
-    setViewSize : function(viewWidth, viewHeight) {
+    setViewSize: function (viewWidth, viewHeight) {
         this._viewWidth = viewWidth;
         this._viewHeight = viewHeight;
 
@@ -620,14 +637,13 @@ engine.BlockCombinationSurface = engine.Object.extend({
             this.updateCamera();
     },
 
-    updateBufferSize : function() {
+    updateBufferSize: function () {
         this._bufferCols = Math.ceil(this._viewWidth / this._tileWidth);
         this._bufferRows = Math.ceil(this._viewHeight / this._tileHeight);
-//      _bufferCols = _bufferCols > _mapCols ? _mapCols : _bufferCols;
-//      _bufferRows = _bufferRows > _mapRows ? _mapRows : _bufferRows;
+        //      _bufferCols = _bufferCols > _mapCols ? _mapCols : _bufferCols;
+        //      _bufferRows = _bufferRows > _mapRows ? _mapRows : _bufferRows;
 
-        if (this._bufferCols > 0 && this._bufferRows > 0)
-        {
+        if (this._bufferCols > 0 && this._bufferRows > 0) {
             /*if (this._bufferBitmapData)
                 this._bufferBitmapData.dispose();
             this._bufferBitmapData = new BitmapData((this._bufferCols + 2 * this._pretreatmentNum) * this._tileWidth, (this._bufferRows + 2 * this._pretreatmentNum) * this._tileHeight, this._transparent, 0);
@@ -642,7 +658,7 @@ engine.BlockCombinationSurface = engine.Object.extend({
         }
     },
 
-    updateCamera : function() {
+    updateCamera: function () {
         //var viewX = SSceneRender.getInstance().viewX;
         //var viewY = SSceneRender.getInstance().viewY;
         //this.focus(viewX, viewY);

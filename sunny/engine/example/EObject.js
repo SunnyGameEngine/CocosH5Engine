@@ -1,2 +1,2 @@
-const Engine = require("./src/com/sunny/game/engine/Engine");
-var object = new Engine.SObject();
+const engine = require("../core/SClass");
+var object = new engine.Object();
