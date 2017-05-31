@@ -11,6 +11,7 @@ require("./utils/SCommonUtil");
 require("./utils/SArrayUtil");
 require("./display/map/SSceneMapLayer");
 require("./display/map/SBlockCombinationSurface");
+require("./display/map/SEarthSurface");
 require("./manager/SResourceManager");
 
 module.exports = engine;
