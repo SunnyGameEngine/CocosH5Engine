@@ -97,7 +97,11 @@ engine.ResourceManager = engine.Object.extend({
         }
         else {
             if (request.callbacks.length == 1) { // 在当前加载请求被加入至请求队列之前，还没有针对该资源的正在进行中的加载
-                cc.loader.loadRes(url, type, (err, asset) => {
+                /*cc.loader.loadRes(url, type, (err, asset) => {
+                    this._invokeRequestCallbacks(request, err, asset);
+                });*/
+
+                cc.loader.load(url, null, (err, asset) => {
                     this._invokeRequestCallbacks(request, err, asset);
                 });
             }
