@@ -9,6 +9,7 @@ require("./core/SObject");
 require("./core/SDictionary");
 require("./utils/SCommonUtil");
 require("./utils/SArrayUtil");
+require("./utils/SProfiler");
 require("./display/map/SSceneMapLayer");
 require("./display/map/SBlockCombinationSurface");
 require("./manager/SResourceManager");

@@ -1,9 +1,0 @@
-package com.sunny.proto;
-syntax = "proto3";
-
-message MapConfigMessage {
-    optional int32 map_width = 1;
-	optional int32 map_height = 2;
-	optional int32 slice_width = 3;
-	optional int32 slice_height = 4;
-}

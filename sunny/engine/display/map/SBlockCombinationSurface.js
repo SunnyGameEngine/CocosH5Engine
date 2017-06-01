@@ -293,10 +293,10 @@ engine.BlockCombinationSurface = engine.Object.extend({
         //console.log("绘制：", colmnsIndex, rowIndex,this._bufferRect.x,this._bufferRect.y);
         var ix = colmnsIndex;
         var iy = rowIndex;
-        //var dirPath = "G:/Workspace/H5MapEditor_BySunny/maps/test";
-        var dirPath = "maps/test";
+        var dirPath = "G:/Workspace/H5MapEditor_BySunny/maps/test";
+        //var dirPath = "maps/test";
 
-        this.loadSlice(dirPath + "/slices/" + ix + "_" + iy/* + ".jpg"*/, ix * this._tileWidth, iy * this._tileHeight);
+        this.loadSlice(dirPath + "/slices/" + ix + "_" + iy + ".jpg", ix * this._tileWidth, iy * this._tileHeight);
     },
 
     tilessssss: new engine.Dictionary(),
@@ -319,6 +319,9 @@ engine.BlockCombinationSurface = engine.Object.extend({
                     cc.error(err);
                 }
                 else {
+                    //cc.log("加载完成：",slicePath);
+                    //texture=that.colorSprite(new cc.Size(256,256),new cc.Color(0,255,0,255))
+
                     sliceItem = new cc.Node();
                     sliceItem.setAnchorPoint(0, 0);
                     sliceItem.setPosition(itemX, itemY);
@@ -349,6 +352,31 @@ engine.BlockCombinationSurface = engine.Object.extend({
               });*/
         }
     },
+
+    /**
+ * 创建单一颜色的精灵
+ * @param size {cc.Size} 尺寸
+ * @param color {cc.Color} 颜色
+ * @returns {cc.Sprite}
+ */
+colorSprite : function(size, color) {
+        var buffer = new Uint8Array(4);
+            buffer[0] = color.r;
+            buffer[1] = color.g;
+            buffer[2] = color.b;
+            buffer[3] = color.a;
+
+        var tex = new cc.Texture2D();
+        tex.initWithData(buffer, cc.Texture2D.PIXEL_FORMAT_RGBA8888, 1, 1, size);
+        return tex;
+
+
+    // var render = new cc.RenderTexture(size.width, size.height);
+    // render.beginWithClear(color.r, color.g, color.b, color.a);
+    // render.visit();
+    // render.end();
+    // return render.getSprite().texture;
+},
 
     focus: function (viewX, viewY) {
         this._viewX = viewX;
