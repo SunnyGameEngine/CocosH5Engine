@@ -293,8 +293,8 @@ engine.BlockCombinationSurface = engine.Object.extend({
         //console.log("绘制：", colmnsIndex, rowIndex,this._bufferRect.x,this._bufferRect.y);
         var ix = colmnsIndex;
         var iy = rowIndex;
-        var dirPath = "G:/Workspace/H5MapEditor_BySunny/maps/test";
-        //var dirPath = "maps/test";
+        //var dirPath = "G:/Workspace/H5MapEditor_BySunny/maps/test";
+        var dirPath = "maps/test";
 
         this.loadSlice(dirPath + "/slices/" + ix + "_" + iy + ".jpg", ix * this._tileWidth, iy * this._tileHeight);
     },
