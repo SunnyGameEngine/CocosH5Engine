@@ -1,4 +1,4 @@
-const engine = require("../core/SClass");
+const engine = require("../core/SPredefine");
 
 cc.Class({
     extends: cc.Component,

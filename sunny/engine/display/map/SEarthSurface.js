@@ -4,7 +4,7 @@
  * @version 创建时间：2017-04-10 15:00:00
  * SEarthSurface
  */
-const engine = require("../../core/SClass");
+const engine = require("../../core/SPredefine");
 
 engine.EarthSurface = engine.BlockCombinationSurface.extend({
     ctor: function (container) {

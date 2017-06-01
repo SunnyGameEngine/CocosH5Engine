@@ -4,9 +4,11 @@
  * @version 创建时间：2017-04-10 15:00:00
  * Engine
  */
-const engine = require("./core/SClass");
+const engine = require("./core/SPredefine");
+require("./core/SClass");
 require("./core/SObject");
-require("./core/SDictionary");
+require("./core/SStartup");
+require("./utils/SDictionary");
 require("./utils/SCommonUtil");
 require("./utils/SArrayUtil");
 require("./utils/SMacro");
@@ -14,6 +16,10 @@ require("./utils/SProfiler");
 require("./display/map/SSceneMapLayer");
 require("./display/map/SBlockCombinationSurface");
 require("./display/map/SEarthSurface");
+require("./display/SScene");
+require("./loader/SBinaryLoader");
 require("./manager/SResourceManager");
+require("./manager/SSceneManager");
+require("./manager/SProtobufManager");
 
 module.exports = engine;

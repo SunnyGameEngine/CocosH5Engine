@@ -4,7 +4,7 @@
  * @version 创建时间：2017-04-10 15:00:00
  * SResourceManager
  */
-const engine = require("../core/SClass");
+const engine = require("../core/SPredefine");
 
 engine.ResourceManager = engine.Object.extend({
     // 所有正在进行中的资源加载请求
@@ -174,6 +174,12 @@ engine.ResourceManager = engine.Object.extend({
      */
     getActorDefaultAnimClips: function () {
         return this._actorDefaultAnimClips;
+    },
+
+    loadBinary:function(url,callback)
+    {
+        var loader = new engine.BinaryLoader();
+        loader.load(url, callback);
     }
 });
 

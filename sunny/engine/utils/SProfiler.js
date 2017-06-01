@@ -1,4 +1,4 @@
-const engine = require("../core/SClass");
+const engine = require("../core/SPredefine");
 //var PStats = require('./pstats/pstats');
 var macro = require('./SMacro');
 

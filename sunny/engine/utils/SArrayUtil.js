@@ -4,7 +4,7 @@
  * @version 创建时间：2017-04-10 15:00:00
  * SArrayUtil
  */
-const engine = require("../core/SClass");
+const engine = require("../core/SPredefine");
 
 engine.ArrayUtil = function ArrayUtil() { };
 

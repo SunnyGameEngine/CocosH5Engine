@@ -4,7 +4,7 @@
  * @version 创建时间：2017-04-10 15:00:00
  * SClass
  */
-var engine = engine || {};
+const engine = require("./SPredefine");
 
 /**
  * Common getter setter configuration function
@@ -256,5 +256,3 @@ var ClassManager = {
         return Class;
     };
 })();
-
-module.exports = engine;

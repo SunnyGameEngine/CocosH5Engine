@@ -4,7 +4,7 @@
  * @version 创建时间：2017-04-10 15:00:00
  * SDictionary
  */
-const engine = require("../core/SClass");
+const engine = require("../core/SPredefine");
 engine.Dictionary = engine.Object.extend({
     _keyMapTb: null,
     _valueMapTb: null,
@@ -21,7 +21,7 @@ engine.Dictionary = engine.Object.extend({
         return "key_" + this.__currId;
     },
 
-    setObject: function (value, key) {
+    setObject: function (key, value) {
         if (key == null)
             return;
 

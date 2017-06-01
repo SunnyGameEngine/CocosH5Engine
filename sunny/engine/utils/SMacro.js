@@ -1,4 +1,4 @@
-const engine = require("../core/SClass");
+const engine = require("../core/SPredefine");
 engine.macro = {
     DIRECTOR_STATS_POSITION: cc.p(0, 0)
 };
