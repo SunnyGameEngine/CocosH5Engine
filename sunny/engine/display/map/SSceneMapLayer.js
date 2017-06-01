@@ -17,7 +17,7 @@ engine.SceneMapLayer = engine.Object.extend({
         var self = this;
         engine.Object.prototype.ctor.call(self);
 
-        this._surface = new engine.BlockCombinationSurface(this._container);
+        this._surface = new engine.EarthSurface(this._container);
         this._surface.focus(0,0);
 
         cc.director.getScheduler().scheduleUpdate(this, 0, false);
