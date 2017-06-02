@@ -117,7 +117,7 @@ engine.ResourceManager = engine.Object.extend({
                 }
                 else
                 {
-                    cc.loader.loadRes(url, type, (err, asset) => {
+                    cc.loader.load(url, type, (err, asset) => {
                         self._invokeRequestCallbacks(request, err, asset);
                     });
                 }

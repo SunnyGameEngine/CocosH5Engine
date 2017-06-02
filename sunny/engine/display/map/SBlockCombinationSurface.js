@@ -102,8 +102,7 @@ engine.BlockCombinationSurface = engine.Object.extend({
         this._mapCols = Math.ceil(this._mapWidth / this._tileWidth);
         this._mapRows = Math.ceil(this._mapHeight / this._tileHeight);
 
-        cc.log("地图数据：", this._mapWidth, this._mapHeight, this._tileWidth, this._tileHeight,//
-            this._pretreatmentWidth, this._pretreatmentHeight, this._mapCols, this._mapRows);
+        //cc.log("地图数据：", this._mapWidth, this._mapHeight, this._tileWidth, this._tileHeight,this._pretreatmentWidth, this._pretreatmentHeight, this._mapCols, this._mapRows);
 
         //   this._mapName = this._config.@name;
         //   this._smallMapResourceId = this._config.sm.@url;
@@ -113,8 +112,6 @@ engine.BlockCombinationSurface = engine.Object.extend({
         //      SCallPool.getInstance().addCall(SResourceManager.CALL_STOP_BACKGROUND_LOAD, stopBackgroundLoad);
 
         this._tiles = new engine.Dictionary();
-        var size = cc.director.getWinSize();
-        this.setViewSize(size.width, size.height);
     },
 
     fillInternal: function () {
@@ -163,17 +160,9 @@ engine.BlockCombinationSurface = engine.Object.extend({
 
             if (tileYDelta > 0) //下边新增
             {
-                startRow = (this._bufferRows - tileYDelta) + this._pretreatmentNum + this._startTileY;
-
-                if (startRow < this._startTileY - this._pretreatmentNum)
-                    startRow = this._startTileY - this._pretreatmentNum;
-                else if (startRow > this._startTileY + this._bufferRows + this._pretreatmentNum)
-                    startRow = this._startTileY + this._bufferRows + this._pretreatmentNum;
+                startRow = (this._bufferRows - tileYDelta) - this._pretreatmentNum + this._startTileY;
                 if (startRow < 0)
                     startRow = 0;
-                else if (startRow > this._mapRows)
-                    startRow = this._mapRows;
-
                 endRow = this._bufferRows + this._pretreatmentNum + this._startTileY;
                 if (endRow > this._mapRows)
                     endRow = this._mapRows;
@@ -200,15 +189,8 @@ engine.BlockCombinationSurface = engine.Object.extend({
                 startRow = -this._pretreatmentNum + this._startTileY;
                 if (startRow < 0)
                     startRow = 0;
-                endRow = tileYDelta - this._pretreatmentNum + this._startTileY;
-
-                if (endRow < this._startTileY - this._pretreatmentNum)
-                    endRow = this._startTileY - this._pretreatmentNum;
-                else if (endRow > this._startTileY + this._bufferRows + this._pretreatmentNum)
-                    endRow = this._startTileY + this._bufferRows + this._pretreatmentNum;
-                if (endRow < 0)
-                    endRow = 0;
-                else if (endRow > this._mapRows)
+                endRow = tileYDelta + this._pretreatmentNum + this._startTileY;
+                if (endRow > this._mapRows)
                     endRow = this._mapRows;
 
                 startColmns = -this._pretreatmentNum + this._startTileX;
@@ -236,17 +218,9 @@ engine.BlockCombinationSurface = engine.Object.extend({
                 if (endRow > this._mapRows)
                     endRow = this._mapRows;
 
-                startColmns = (this._bufferCols - tileXDelta) + this._pretreatmentNum + this._startTileX;
-
-                if (startColmns < this._startTileX - this._pretreatmentNum)
-                    startColmns = this._startTileX - this._pretreatmentNum;
-                else if (startColmns > this._startTileX + this._bufferCols + this._pretreatmentNum)
-                    startColmns = this._startTileX + this._bufferCols + this._pretreatmentNum;
+                startColmns = (this._bufferCols - tileXDelta) - this._pretreatmentNum + this._startTileX;
                 if (startColmns < 0)
                     startColmns = 0;
-                else if (startColmns > this._mapCols)
-                    startColmns = this._mapCols;
-
                 endColmns = this._bufferCols + this._pretreatmentNum + this._startTileX;
                 if (endColmns > this._mapCols)
                     endColmns = this._mapCols;
@@ -273,15 +247,8 @@ engine.BlockCombinationSurface = engine.Object.extend({
                 startColmns = -this._pretreatmentNum + this._startTileX;
                 if (startColmns < 0)
                     startColmns = 0;
-                endColmns = tileXDelta - this._pretreatmentNum + this._startTileX;
-
-                if (endColmns < this._startTileX - this._pretreatmentNum)
-                    endColmns = this._startTileX - this._pretreatmentNum;
-                else if (endColmns > this._startTileX + this._bufferCols + this._pretreatmentNum)
-                    endColmns = this._startTileX + this._bufferCols + this._pretreatmentNum;
-                if (endColmns < 0)
-                    endColmns = 0;
-                else if (endColmns > this._mapCols)
+                endColmns = tileXDelta + this._pretreatmentNum + this._startTileX;
+                if (endColmns > this._mapCols)
                     endColmns = this._mapCols;
 
                 for (rowCount = endRow - 1; rowCount >= startRow; rowCount--) //顺时针则从下到上
@@ -344,7 +311,7 @@ engine.BlockCombinationSurface = engine.Object.extend({
 
     loadSlice: function (sliceUrl, tileX, tileY) {
         var itemX = tileX * this._tileWidth;
-        var itemY = this._mapHeight - tileY * this._tileHeight;
+        var itemY = this._mapHeight - tileY * this._tileHeight - this._tileHeight;
         //console.log("瓦片位置：",itemX,itemY);
 
         var that = this;
@@ -353,10 +320,19 @@ engine.BlockCombinationSurface = engine.Object.extend({
         var sliceItem = this._tiles.objectForKey(resId);
         if (sliceItem) {
             sliceItem.setPosition(itemX, itemY);
-            that._bufferContainer.addChild(sliceItem);
+            if(sliceItem.parent != that._bufferContainer)
+            {
+                that._bufferContainer.addChild(sliceItem);
+            }
         }
         else {
-            engine.ResourceManager.getInstance().loadRes(sliceUrl, (err, texture) => {
+                var sliceItem = new cc.Node();
+                sliceItem.setAnchorPoint(0, 0);
+                sliceItem.setPosition(itemX, itemY);
+                that._bufferContainer.addChild(sliceItem);
+                that._tiles.setObject(resId, sliceItem);
+
+                engine.ResourceManager.getInstance().loadRes(sliceUrl, (err, texture) => {
                 if (err) {
                     cc.error(err);
                 }
@@ -364,13 +340,10 @@ engine.BlockCombinationSurface = engine.Object.extend({
                     //cc.log("加载完成：",resId,slicePath);
                     //texture=that.colorSprite(new cc.Size(256,256),new cc.Color(0,255,0,255))
 
-                    var sliceItem = new cc.Node();
-                    sliceItem.setAnchorPoint(0, 0);
-                    sliceItem.setPosition(itemX, itemY);
+                    var sliceItem = that._tiles.objectForKey(resId);
                     var sprite = sliceItem.addComponent(cc.Sprite);
-                    that._bufferContainer.addChild(sliceItem);
                     sprite.spriteFrame = new cc.SpriteFrame(texture);
-                    that._tiles.setObject(resId, sliceItem);
+
                 }
             });
 
@@ -420,7 +393,22 @@ engine.BlockCombinationSurface = engine.Object.extend({
         // return render.getSprite().texture;
     },
 
-    focus: function (viewX, viewY) {
+    getViewUIPos : function() {
+        var pos = engine.CommonUtil.convertToUI({x:this._viewX, y:this._viewY});
+        return pos;
+    },
+
+    getViewGLPos : function() {
+        var pos = {x:this._viewX, y:this._viewY};
+        return pos;
+    },
+
+    setViewUIPos: function (viewX, viewY) {
+        var pos = engine.CommonUtil.convertToGL({x:viewX, y:viewY});
+        this.setViewGLPos(pos.x,pos.y);
+    },
+
+    setViewGLPos: function (viewX, viewY) {
         this._viewX = viewX;
         this._viewY = viewY;
 
@@ -436,19 +424,19 @@ engine.BlockCombinationSurface = engine.Object.extend({
         this._lastViewY = this._viewY;
 
         if (isRefreshScreen) {
+            this._screenRect.x = -this._viewX;
+            this._screenRect.y = this._viewY;
+
             //console.log("刷新缓冲区",this._viewX,this._viewY,this._tileWidth,this._tileHeight);
             // 计算出缓冲区开始的区块索引
-            this._startTileX = Math.floor(this._viewX / this._tileWidth);
-            this._startTileY = Math.floor(this._viewY / this._tileHeight);
-
-            this._screenRect.x = this._viewX;
-            this._screenRect.y = this._viewY;
+            this._startTileX = Math.floor(this._screenRect.x / this._tileWidth);
+            this._startTileY = Math.floor((this._screenRect.y - this._viewHeight) / this._tileHeight);
 
             var isRefreshBuffer = true;
 
             //剩余值
-            this._offsetPoint.x = this._viewX % this._tileWidth;
-            this._offsetPoint.y = this._viewY % this._tileHeight;
+            this._offsetPoint.x = this._screenRect.x % this._tileWidth;
+            this._offsetPoint.y = this._screenRect.y % this._tileHeight;
 
             // 如果缓冲区的区块索引与上一帧相同，则本帧无需刷新缓冲区
             var tileXDelta = this._startTileX - this._lastStartTileX;
@@ -465,13 +453,14 @@ engine.BlockCombinationSurface = engine.Object.extend({
                 this._lastStartTileX = -1;
                 this._lastStartTileY = -1;
             }
+            //console.log("isRefreshBuffer",this._viewX,this._viewY,this._startTileX,this._startTileY);
 
             this._viewRect.x = this._offsetPoint.x - this._pretreatmentWidth;
             this._viewRect.y = this._offsetPoint.y + this._pretreatmentHeight;
 
-            var buffPosX = -this._viewX;
-            var buffPosY = -(this._mapHeight - this._viewHeight + this._viewY);
-            //console.log("刷新坐标",buffPosX,buffPosY);
+            var buffPosX = -this._screenRect.x;
+            var buffPosY = this._screenRect.y - this._mapHeight;
+            //console.log("刷新坐标",buffPosX,buffPosY,this._viewX,this._viewY);
             this._bufferContainer.setPosition(buffPosX, buffPosY);
 
             // 加载地图区块到缓冲区中

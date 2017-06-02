@@ -100,4 +100,14 @@ engine.CommonUtil.urlAppendTimestamp = function (url) {
     }
     return url;
 };
+
+engine.CommonUtil.convertToGL = function (uiPoint) {
+    var size = cc.director.getWinSize();
+    return {x: uiPoint.x, y: size.height - uiPoint.y};
+},
+
+engine.CommonUtil.convertToUI = function (glPoint) {
+    var size = cc.director.getWinSize();
+    return {x: glPoint.x, y: size.height - glPoint.y};
+}
 module.exports = engine.CommonUtil;

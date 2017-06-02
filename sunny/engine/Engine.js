@@ -23,5 +23,6 @@ require("./loader/STextLoader");
 require("./manager/SResourceManager");
 require("./manager/SSceneManager");
 require("./manager/SProtobufManager");
+require("./input/SMouseController");
 
 module.exports = engine;
