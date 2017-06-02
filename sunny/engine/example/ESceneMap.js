@@ -7,6 +7,18 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-        this._mapLayer = new engine.SceneMapLayer(this.node);
-    }
+        engine.macro.IS_COCOS_CREATOR = true;
+        
+        var self = this;
+            engine.ProtobufManager.getInstance().loadProto("proto/map_config",(err,builder) => {
+                if (err) {
+                }
+                else
+                {
+                    self._mapLayer = new engine.SceneMapLayer(this.node);
+                    var configUrl = "maps/test/map";
+                    self._mapLayer.loadMap(configUrl);
+                }
+            });
+        }
 });

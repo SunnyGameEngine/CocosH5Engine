@@ -29,6 +29,7 @@ engine.BlockCombinationSurface = engine.Object.extend({
     _screenRect: null,
     _mapName: null,
     _bufferTilePoint: null,
+    _dirUrl: null,
     _config: null,
     _fileVersions: null,
     _leftBorder: 0,
@@ -73,46 +74,47 @@ engine.BlockCombinationSurface = engine.Object.extend({
         this._offsetPoint = new cc.p(0, 0);
     },
 
-    setConfig : function(config) {
-          this._config = config;
-          this.parseMapData();
+    setConfig: function (dirUrl, config) {
+        this._dirUrl = dirUrl;
+        this._config = config;
+        this.parseMapData();
     },
 
-    parseMapData : function() {
-          this._loadPriority = -10;
+    parseMapData: function () {
+        this._loadPriority = -10;
         //   this._fileVersions = {};
         //   for each (var tileXML in this._config.tile)
         //   {
         //     var version = (SShellVariables.useCache ? String(tileXML.@version) : String(Math.random()));
         //     this._fileVersions[String(tileXML.@id)] = {url: String(tileXML.@url), version: version};
         //   }
-    
-            // 从配置文件中获取地图基本信息
-            this._mapWidth = parseInt(this._config.get("map_width"));
-            this._mapHeight = parseInt(this._config.get("map_height"));
-        
-            this._tileWidth = parseInt(this._config.get("slice_width"));
-            this._tileHeight = parseInt(this._config.get("slice_height"));
-        
-            this._pretreatmentWidth = this._pretreatmentNum * this._tileWidth;
-            this._pretreatmentHeight = this._pretreatmentNum * this._tileHeight;
-        
-            this._mapCols = Math.ceil(this._mapWidth / this._tileWidth);
-            this._mapRows = Math.ceil(this._mapHeight / this._tileHeight);
 
-            cc.log("地图数据：",this._mapWidth,this._mapHeight,this._tileWidth,this._tileHeight,//
-                    this._pretreatmentWidth,this._pretreatmentHeight,this._mapCols,this._mapRows);
-    
+        // 从配置文件中获取地图基本信息
+        this._mapWidth = parseInt(this._config.get("map_width"));
+        this._mapHeight = parseInt(this._config.get("map_height"));
+
+        this._tileWidth = parseInt(this._config.get("slice_width"));
+        this._tileHeight = parseInt(this._config.get("slice_height"));
+
+        this._pretreatmentWidth = this._pretreatmentNum * this._tileWidth;
+        this._pretreatmentHeight = this._pretreatmentNum * this._tileHeight;
+
+        this._mapCols = Math.ceil(this._mapWidth / this._tileWidth);
+        this._mapRows = Math.ceil(this._mapHeight / this._tileHeight);
+
+        cc.log("地图数据：", this._mapWidth, this._mapHeight, this._tileWidth, this._tileHeight,//
+            this._pretreatmentWidth, this._pretreatmentHeight, this._mapCols, this._mapRows);
+
         //   this._mapName = this._config.@name;
         //   this._smallMapResourceId = this._config.sm.@url;
         //   this._smallMapVersion = (SShellVariables.useCache ? String(this._config.sm.@version) : String(Math.random()));
-    
-    //      SCallPool.getInstance().addCall(SResourceManager.CALL_START_BACKGROUND_LOAD, startBackgroundLoad);
-    //      SCallPool.getInstance().addCall(SResourceManager.CALL_STOP_BACKGROUND_LOAD, stopBackgroundLoad);
-    
-            this._tiles = new engine.Dictionary();
-            var size = cc.director.getWinSize();
-            this.setViewSize(size.width, size.height);
+
+        //      SCallPool.getInstance().addCall(SResourceManager.CALL_START_BACKGROUND_LOAD, startBackgroundLoad);
+        //      SCallPool.getInstance().addCall(SResourceManager.CALL_STOP_BACKGROUND_LOAD, stopBackgroundLoad);
+
+        this._tiles = new engine.Dictionary();
+        var size = cc.director.getWinSize();
+        this.setViewSize(size.width, size.height);
     },
 
     fillInternal: function () {
@@ -332,27 +334,29 @@ engine.BlockCombinationSurface = engine.Object.extend({
         //console.log("绘制：", colmnsIndex, rowIndex,this._bufferRect.x,this._bufferRect.y);
         var ix = colmnsIndex;
         var iy = rowIndex;
-        var dirPath = "G:/Workspace/H5MapEditor_BySunny/maps/test";
-        //var dirPath = "maps/test";
-
-        this.loadSlice(dirPath + "/slices/" + ix + "_" + iy + ".jpg", ix, iy);
+        if (engine.macro.IS_COCOS_CREATOR) {
+            this.loadSlice(this._dirUrl + "/slices/" + ix + "_" + iy, ix, iy);
+        }
+        else {
+            this.loadSlice(this._dirUrl + "/slices/" + ix + "_" + iy + ".jpg", ix, iy);
+        }
     },
 
-    loadSlice: function (slicePath, tileX, tileY) {
+    loadSlice: function (sliceUrl, tileX, tileY) {
         var itemX = tileX * this._tileWidth;
         var itemY = this._mapHeight - tileY * this._tileHeight;
         //console.log("瓦片位置：",itemX,itemY);
 
         var that = this;
 
-        var resId = this.getTileResId(tileX,tileY);
+        var resId = this.getTileResId(tileX, tileY);
         var sliceItem = this._tiles.objectForKey(resId);
         if (sliceItem) {
             sliceItem.setPosition(itemX, itemY);
             that._bufferContainer.addChild(sliceItem);
         }
         else {
-            engine.ResourceManager.getInstance().loadRes(slicePath, (err, texture) => {
+            engine.ResourceManager.getInstance().loadRes(sliceUrl, (err, texture) => {
                 if (err) {
                     cc.error(err);
                 }
@@ -366,7 +370,7 @@ engine.BlockCombinationSurface = engine.Object.extend({
                     var sprite = sliceItem.addComponent(cc.Sprite);
                     that._bufferContainer.addChild(sliceItem);
                     sprite.spriteFrame = new cc.SpriteFrame(texture);
-                    that._tiles.setObject(resId,sliceItem);
+                    that._tiles.setObject(resId, sliceItem);
                 }
             });
 
@@ -397,24 +401,24 @@ engine.BlockCombinationSurface = engine.Object.extend({
  * @param color {cc.Color} 颜色
  * @returns {cc.Sprite}
  */
-colorSprite : function(size, color) {
+    colorSprite: function (size, color) {
         var buffer = new Uint8Array(4);
-            buffer[0] = color.r;
-            buffer[1] = color.g;
-            buffer[2] = color.b;
-            buffer[3] = color.a;
+        buffer[0] = color.r;
+        buffer[1] = color.g;
+        buffer[2] = color.b;
+        buffer[3] = color.a;
 
         var tex = new cc.Texture2D();
         tex.initWithData(buffer, cc.Texture2D.PIXEL_FORMAT_RGBA8888, 1, 1, size);
         return tex;
 
 
-    // var render = new cc.RenderTexture(size.width, size.height);
-    // render.beginWithClear(color.r, color.g, color.b, color.a);
-    // render.visit();
-    // render.end();
-    // return render.getSprite().texture;
-},
+        // var render = new cc.RenderTexture(size.width, size.height);
+        // render.beginWithClear(color.r, color.g, color.b, color.a);
+        // render.visit();
+        // render.end();
+        // return render.getSprite().texture;
+    },
 
     focus: function (viewX, viewY) {
         this._viewX = viewX;
@@ -675,8 +679,7 @@ colorSprite : function(size, color) {
             var resId = this.getTileResId(tileX, tileY);
             var sliceItem = this._tiles.objectForKey(resId);
             if (sliceItem) {
-                if(sliceItem.parent)
-                {
+                if (sliceItem.parent) {
                     sliceItem.parent.removeChild(sliceItem);
                     //console.log("移除瓦片！",tileX,tileY);
                 }
@@ -689,14 +692,14 @@ colorSprite : function(size, color) {
             //     this._tiles.deleteValue(tileId);
             // }
         }
-        else {
-            console.error("地图删除区域不在范围内！");
-        }
+        // else {
+        //     console.error("地图删除区域不在范围内！");
+        // }
     },
 
-    getTileResId : function(tileX, tileY) {
-          var resId = tileX + "_" + tileY;
-          return resId;
+    getTileResId: function (tileX, tileY) {
+        var resId = tileX + "_" + tileY;
+        return resId;
     },
 
     setViewSize: function (viewWidth, viewHeight) {

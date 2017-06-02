@@ -27,11 +27,19 @@ engine.ProtobufManager = engine.Object.extend({
         engine.ResourceManager.getInstance().loadRes(protoUrl, function (err, protoData){
              if (err) {
                 cc.error(err);
+                if(callback)
+                {
+                    callback(err);
+                }
             }
             else
             {
-                self._builder = ProtoBuf.protoFromString(protoData);
                 cc.log("loadProto finish!",protoData);
+                self._builder = ProtoBuf.protoFromString(protoData);
+                if(callback)
+                {
+                    callback(null,self._builder);
+                }
             }
         });
     },
@@ -41,6 +49,7 @@ engine.ProtobufManager = engine.Object.extend({
         var self = this;
         ProtoBuf.loadProtoFile(protoUrl, function (err, protoBuilder){
              if (err) {
+                console.error("loadProtoFile failed!",err);
                 if(callback)
                 {
                     callback(err);
@@ -52,7 +61,7 @@ engine.ProtobufManager = engine.Object.extend({
                 self._builder = protoBuilder;
                 if(callback)
                 {
-                    callback(null,protoBuilder);
+                    callback(null,self._builder);
                 }
             }
         });
@@ -66,8 +75,15 @@ engine.ProtobufManager = engine.Object.extend({
             if(!Message)
             {
                 Message = this._builder.build(className);
-                this._messages.setObject(className,Message);
-                console.log("build proto finish!",className);
+                if(Message)
+                {
+                    this._messages.setObject(className,Message);
+                    console.log("build proto finish!",className);
+                }
+                else
+                {
+                    console.error("build Message failed!");
+                }
             }
             return Message;
         }
@@ -93,8 +109,9 @@ engine.ProtobufManager = engine.Object.extend({
     buildMessage:function(url,className,callback)
     {
         var self = this;
-        engine.ResourceManager.getInstance().loadBinary(url, function (err, uint8Array){
+        engine.ResourceManager.getInstance().loadRes(url, function (err, uint8Array){
             if (err) {
+                cc.error(err);
                 if(callback)
                 {
                     callback(err);
@@ -102,6 +119,7 @@ engine.ProtobufManager = engine.Object.extend({
             }
             else
             {
+                cc.log("buildMessage finish!",typeof uint8Array,uint8Array);
                 if(callback)
                 {
                     var proto = self.decodeMessage(uint8Array,className);

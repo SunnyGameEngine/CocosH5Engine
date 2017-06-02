@@ -7,14 +7,12 @@
 const engine = require("../core/SPredefine");
 engine.BinaryLoader = engine.Object.extend({
 
-    navigator : window.navigator,
-
-    _IEFilter : (/msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent)),
-
     ctor: function () {
+        var navigator = window.navigator;
+        var IEFilter = (/msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent));
         //Compatibility with IE9
         window.Uint8Array = window.Uint8Array || window.Array;
-        if (this._IEFilter) {
+        if (IEFilter) {
             var IEBinaryToArray_ByteStr_Script =
                 '<!-- IEBinaryToArray_ByteStr -->\r\n' +
                     //'<script type='text/vbscript'>\r\n' +
@@ -58,29 +56,20 @@ engine.BinaryLoader = engine.Object.extend({
         }
     },
 
-    _str2Uint8Array : function(strData) {
-        if (!strData)
-            return null;
-
-        var arrData = new Uint8Array(strData.length);
-        for (var i = 0; i < strData.length; i++) {
-            arrData[i] = strData.charCodeAt(i) & 0xff;
-        }
-        return arrData;
-    },
-
-    load : function(url, callback) {
-        var self = this;
-        var xhr = cc.loader.getXMLHttpRequest(),
-            errInfo = 'Load ' + url + ' failed!';
+    load : function(item, callback) {
+        var navigator = window.navigator;
+        var IEFilter = (/msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent));
+        var url = item.url;
+        var xhr = cc.loader.getXMLHttpRequest();
+        var errInfo = 'Load ' + url + ' failed!';
         xhr.open('GET', url, true);
-        if (this._IEFilter) {
+        if (IEFilter) {
             // IE-specific logic here
             xhr.setRequestHeader('Accept-Charset', 'x-user-defined');
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && (xhr.status === 200 || (CC_TEST && xhr.status === 0))) {
                     var fileContents = _convertResponseBodyToText(xhr['responseBody']);
-                    callback(null, self._str2Uint8Array(fileContents));
+                    callback(null, engine.BufferUtil.str2Uint8Array(fileContents));
                 }
                 else {
                     callback(errInfo);
@@ -90,7 +79,7 @@ engine.BinaryLoader = engine.Object.extend({
             if (xhr.overrideMimeType) xhr.overrideMimeType('text\/plain; charset=x-user-defined');
             xhr.onload = function () {
                 if (xhr.readyState === 4 && (xhr.status === 200 || (CC_TEST && xhr.status === 0))) {
-                    callback(null, self._str2Uint8Array(xhr.responseText));
+                    callback(null, engine.BufferUtil.str2Uint8Array(xhr.responseText));
                 }
                 else {
                     callback(errInfo);

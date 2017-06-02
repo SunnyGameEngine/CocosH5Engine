@@ -7,6 +7,11 @@
 const engine = require("../core/SPredefine");
 
 engine.ResourceManager = engine.Object.extend({
+
+    _textLoader : null,
+    _binaryLoader : null,
+
+
     // 所有正在进行中的资源加载请求
     // 之所以弄一个这个东西，是为了避免对同一资源同时发起多个加载请求
     _loadRequestQueue: [],
@@ -17,6 +22,14 @@ engine.ResourceManager = engine.Object.extend({
     ctor: function () {
         if (engine.ResourceManager._singleton)
             throw new Error("只能通过getInstance()来获取ResourceManager实例！");
+        
+        this._textLoader = new engine.TextLoader();
+        this._binaryLoader = new engine.BinaryLoader();
+        var extMap = {
+            'proto' : this._textLoader.load,
+            'bmc' : this._binaryLoader.load
+        };
+        cc.loader.addDownloadHandlers(extMap);
     },
 
     /**
@@ -89,21 +102,25 @@ engine.ResourceManager = engine.Object.extend({
         // 添加回调
         request.callbacks.push(completeCallback);
 
-        // 这里作了一个优化：
-        // 如果cc.loader的缓存（内存）中已有要加载的资源，就不必再去访问服务器了，此处直接触发回调
+        var self = this;
         var asset = this.getCachedRes(url, type);
         if (asset) {
-            this._invokeRequestCallbacks(request, null, asset);
+            self._invokeRequestCallbacks(request, null, asset);
         }
         else {
             if (request.callbacks.length == 1) { // 在当前加载请求被加入至请求队列之前，还没有针对该资源的正在进行中的加载
-                /*cc.loader.loadRes(url, type, (err, asset) => {
-                    this._invokeRequestCallbacks(request, err, asset);
-                });*/
-
-                cc.loader.load(url, null, (err, asset) => {
-                    this._invokeRequestCallbacks(request, err, asset);
-                });
+                if(engine.macro.IS_COCOS_CREATOR)
+                {
+                    cc.loader.loadRes(url, type, (err, asset) => {
+                        self._invokeRequestCallbacks(request, err, asset);
+                    });
+                }
+                else
+                {
+                    cc.loader.loadRes(url, type, (err, asset) => {
+                        self._invokeRequestCallbacks(request, err, asset);
+                    });
+                }
             }
         }
     },
@@ -174,12 +191,6 @@ engine.ResourceManager = engine.Object.extend({
      */
     getActorDefaultAnimClips: function () {
         return this._actorDefaultAnimClips;
-    },
-
-    loadBinary:function(url,callback)
-    {
-        var loader = new engine.BinaryLoader();
-        loader.load(url, callback);
     }
 });
 
