@@ -34,7 +34,7 @@ engine.ProtobufManager = engine.Object.extend({
             }
             else
             {
-                cc.log("loadProto finish!",protoData);
+                cc.log("loadProto finish!"/*,protoData*/);
                 self._builder = ProtoBuf.protoFromString(protoData);
                 if(callback)
                 {
