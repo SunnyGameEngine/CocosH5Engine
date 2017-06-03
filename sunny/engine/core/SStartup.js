@@ -5,42 +5,48 @@
  * SStartup
  */
 const engine = require("./SPredefine");
+require("./SObject");
+
 engine.Startup = engine.Object.extend({
+
+    _profiler: null,
+
     ctor: function () {
         this._super();
+        var self = this;
         cc.game.run({
-            "debugMode" : 1,
+            "debugMode": 1,
             "noCache": false,
-            "showFPS" : false,
-            "frameRate" : 60,
-            "id" : "gameCanvas",
-            "renderMode" : 0,
-            "engineDir":"./src/cocos2d_engine",
+            "showFPS": false,
+            "frameRate": 60,
+            "id": "gameCanvas",
+            "renderMode": 0,
+            "engineDir": "./src/cocos2d_engine",
 
-            "modules" : ["cocos2d"],
+            "modules": ["cocos2d"],
 
-            "jsList" : [
+            "jsList": [
                 /*"./src/com/black8/sunny/engine/Engine.js"*/
             ]
-        },function(){
+        }, function () {
             if (!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
                 document.body.removeChild(document.getElementById("cocosLoading"));
 
-                //load resources
-                //cc.LoaderScene.preload(g_resources, function () {
-                //    cc.director.runScene(new MyScene());
-                //}, this);
+            //load resources
+            //cc.LoaderScene.preload(g_resources, function () {
+            //    cc.director.runScene(new MyScene());
+            //}, this);
 
-                var designSize = cc.size(1200, 800);
-                var policy = new cc.ResolutionPolicy(cc.ContainerStrategy.EQUAL_TO_FRAME, cc.ContentStrategy.EXACT_FIT);
-                cc.view.setDesignResolutionSize(designSize.width, designSize.height, policy);//cc.ResolutionPolicy.SHOW_ALL
-                cc.view.resizeWithBrowserSize(false);
-                cc.director.setDisplayStats(false);
+            var designSize = cc.size(1200, 800);
+            var policy = new cc.ResolutionPolicy(cc.ContainerStrategy.EQUAL_TO_FRAME, cc.ContentStrategy.EXACT_FIT);
+            cc.view.setDesignResolutionSize(designSize.width, designSize.height, policy);//cc.ResolutionPolicy.SHOW_ALL
+            cc.view.resizeWithBrowserSize(false);
+            cc.director.setDisplayStats(false);
 
-                engine.SceneManager.getInstance().activateScene();
+            engine.SceneManager.getInstance().activateScene();
 
-                engine.profiler.showStats();
-            }
-        );
+            self._profiler = new engine.Profiler();
+            self._profiler.showStats();
+        });
     }
 });

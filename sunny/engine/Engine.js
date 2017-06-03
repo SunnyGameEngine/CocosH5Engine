@@ -14,6 +14,7 @@ require("./utils/SArrayUtil");
 require("./utils/SBufferUtil");
 require("./utils/SMacro");
 require("./utils/SProfiler");
+require("./utils/SStats");
 require("./display/map/SSceneMapLayer");
 require("./display/map/SBlockCombinationSurface");
 require("./display/map/SEarthSurface");

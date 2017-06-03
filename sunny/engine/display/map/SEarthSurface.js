@@ -5,6 +5,7 @@
  * SEarthSurface
  */
 const engine = require("../../core/SPredefine");
+require("./SBlockCombinationSurface");
 
 engine.EarthSurface = engine.BlockCombinationSurface.extend({
     ctor: function (container) {
