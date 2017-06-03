@@ -35,7 +35,7 @@ engine.Startup = engine.Object.extend({
                 var policy = new cc.ResolutionPolicy(cc.ContainerStrategy.EQUAL_TO_FRAME, cc.ContentStrategy.EXACT_FIT);
                 cc.view.setDesignResolutionSize(designSize.width, designSize.height, policy);//cc.ResolutionPolicy.SHOW_ALL
                 cc.view.resizeWithBrowserSize(false);
-                cc.director.setDisplayStats(true);
+                cc.director.setDisplayStats(false);
 
                 engine.SceneManager.getInstance().activateScene();
 
