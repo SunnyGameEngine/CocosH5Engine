@@ -65,14 +65,14 @@ engine.SceneMapLayer = engine.Object.extend({
 
                 self.setViewUIPos(0, 0);
                 //self.setViewUIPos(0, -1060);
-             //   cc.director.getScheduler().scheduleUpdate(self, 0, false);
+                cc.director.getScheduler().scheduleUpdate(self, 0, false);
             }
         });
     },
 
     update: function (dt) {
         this.setViewUIPos(this._tttttt,this._tttttt2);
-        this._tttttt -= 10;
-        this._tttttt2 -= 10;
+        this._tttttt -= 1;
+        this._tttttt2 -= 1;
     }
 });
